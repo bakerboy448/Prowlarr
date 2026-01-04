@@ -250,6 +250,11 @@ namespace NzbDrone.Core.Indexers.Definitions.Cardigann
             capabilities.ParseCardigannSearchModes(definition.Caps.Modes);
             capabilities.SupportsRawSearch = definition.Caps.Allowrawsearch;
 
+            if (definition.Caps.Allowtvsearchimdb && !capabilities.TvSearchParams.Contains(TvSearchParam.ImdbId))
+            {
+                capabilities.TvSearchParams.Add(TvSearchParam.ImdbId);
+            }
+
             if (definition.Caps.Categories != null && definition.Caps.Categories.Any())
             {
                 foreach (var category in definition.Caps.Categories)
