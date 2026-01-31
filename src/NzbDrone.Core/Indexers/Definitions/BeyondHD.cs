@@ -61,7 +61,7 @@ namespace NzbDrone.Core.Indexers.Definitions
             {
                 TvSearchParams = new List<TvSearchParam>
                 {
-                    TvSearchParam.Q, TvSearchParam.Season, TvSearchParam.Ep, TvSearchParam.ImdbId
+                    TvSearchParam.Q, TvSearchParam.Season, TvSearchParam.Ep, TvSearchParam.ImdbId, TvSearchParam.TmdbId
                 },
                 MovieSearchParams = new List<MovieSearchParam>
                 {
@@ -92,7 +92,7 @@ namespace NzbDrone.Core.Indexers.Definitions
             _capabilities = capabilities;
         }
 
-        private IEnumerable<IndexerRequest> GetPagedRequests(SearchCriteriaBase searchCriteria, string searchTerm, string imdbId = null, int tmdbId = 0)
+        private IEnumerable<IndexerRequest> GetPagedRequests(SearchCriteriaBase searchCriteria, string searchTerm, string imdbId = null, int tmdbId = 0, bool isTvSearch = false)
         {
             var body = new Dictionary<string, object>
             {
@@ -126,7 +126,8 @@ namespace NzbDrone.Core.Indexers.Definitions
             }
             else if (tmdbId > 0)
             {
-                body.Add("tmdb_id", $"movie/{tmdbId}");
+                var tmdbPrefix = isTvSearch ? "tv" : "movie";
+                body.Add("tmdb_id", $"{tmdbPrefix}/{tmdbId}");
             }
 
             if (searchTerm.IsNotNullOrWhiteSpace())
@@ -208,7 +209,7 @@ namespace NzbDrone.Core.Indexers.Definitions
                 searchTerm = $"{searchCriteria.SanitizedSearchTerm} {showDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
             }
 
-            pageableRequests.Add(GetPagedRequests(searchCriteria, searchTerm, searchCriteria.FullImdbId));
+            pageableRequests.Add(GetPagedRequests(searchCriteria, searchTerm, searchCriteria.FullImdbId, searchCriteria.TmdbId.GetValueOrDefault(), isTvSearch: true));
 
             return pageableRequests;
         }
