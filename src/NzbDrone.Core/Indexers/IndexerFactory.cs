@@ -122,6 +122,12 @@ namespace NzbDrone.Core.Indexers
             definition.Capabilities = new IndexerCapabilities();
             definition.Capabilities.ParseCardigannSearchModes(defFile.Caps.Modes);
             definition.Capabilities.SupportsRawSearch = defFile.Caps.Allowrawsearch;
+
+            if (defFile.Caps.Allowtvsearchimdb && !definition.Capabilities.TvSearchParams.Contains(TvSearchParam.ImdbId))
+            {
+                definition.Capabilities.TvSearchParams.Add(TvSearchParam.ImdbId);
+            }
+
             MapCardigannCategories(definition, defFile);
         }
 
